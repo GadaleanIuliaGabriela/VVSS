@@ -35,14 +35,14 @@ public class EmployeeTest {
 
 //    @Test
 //    public void testECP2() throws EmployeeException {
-//        Employee employee = new Employee(123,123, 123, DidacticFunction.TEACHER, "4000");
+//        Employee employee = new Employee(123,"gadalean", "2970327123456", DidacticFunction.TEACHER, "4000");
 //        ctrl.addEmployee(employee);
 //    }
 
 
 //    @Test
 //    public void testECP3() throws EmployeeException {
-//        Employee employee = new Employee("i","g",123, DidacticFunction.TEACHER, "100");
+//        Employee employee = new Employee("iulia","gadalean",123, DidacticFunction.TEACHER, "100");
 //        ctrl.addEmployee(employee);
 //    }
 
