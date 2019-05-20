@@ -9,6 +9,7 @@ import giir2105MV.salariati.validator.EmployeeValidator;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 public class EmployeeRepository implements EmployeeRepositoryInterface {
@@ -17,9 +18,9 @@ public class EmployeeRepository implements EmployeeRepositoryInterface {
     private EmployeeValidator employeeValidator = new EmployeeValidator();
 
     @Override
-    public boolean addEmployee(Employee employee) {
-        BufferedWriter bw = null;
-        if (employeeValidator.isValid(employee)) {
+    public boolean addEmployee(Employee employee) throws EmployeeException {
+        if( employeeValidator.isValid(employee) ) {
+            BufferedWriter bw = null;
             try {
                 bw = new BufferedWriter(new FileWriter(employeeFile, true));
                 bw.write(employee.toString());
@@ -27,16 +28,10 @@ public class EmployeeRepository implements EmployeeRepositoryInterface {
                 bw.close();
                 return true;
             } catch (IOException e) {
-                System.err.println("Error while reading: " + e);
-            } finally {
-                if (bw != null)
-                    try {
-                        bw.close();
-                    } catch (IOException e) {
-                        System.err.println("Error while closing the file: " + e);
-                    }
+                e.printStackTrace();
             }
         }
+        else throw new EmployeeException("Invalid");
         return false;
     }
 
@@ -47,17 +42,32 @@ public class EmployeeRepository implements EmployeeRepositoryInterface {
 //    }
 
     @Override
-    public void modifyEmployee(String firstName, String lastName, DidacticFunction function) {
-        List<Employee> employees = getEmployeeList();
-        for (Employee e : employees) {
-            if (e.getFirstName().equals(firstName) && e.getLastName().equals(lastName)) {
-                e.setFunction(function);
-                break;
-            }
+    public void modifyEmployee(String firstName, String lastName, DidacticFunction function) throws Exception {
+        List<Employee> employees = getEmployeeList(); //1
+
+        if(firstName == null) //2
+            throw new Exception("FirstName can't be null!"); //3
+        if(firstName.length() < 2){ //4
+            throw new Exception("FirstName can't have only one character!"); //5
         }
 
-        deleteAllFromFile();
-        writeEmployeeList(employees);
+        if(lastName == null) //6
+            throw new Exception("LastName can't be null!"); //7
+        if(lastName.length() < 2){ //8
+            throw new Exception("LastName can't have only one character!"); //9
+        }
+
+        int i=0; //10
+        while(i<employees.size()){ //11
+            String name = employees.get(i).getLastName(); //12
+            if(lastName.equals(name)){ //13
+                employees.get(i).setFunction(function); //14
+                break; //15
+            }
+            i++; //16
+        }
+        deleteAllFromFile(); //17
+        writeEmployeeList(employees); //18
     }
 
     public void writeEmployeeList(List<Employee> employees) {
@@ -84,7 +94,7 @@ public class EmployeeRepository implements EmployeeRepositoryInterface {
 
     }
 
-    private void deleteAllFromFile() {
+    public void deleteAllFromFile() {
         try {
             PrintWriter writer = new PrintWriter(employeeFile);
             writer.print("");
@@ -110,6 +120,8 @@ public class EmployeeRepository implements EmployeeRepositoryInterface {
                     employeeList.add(employee);
                 } catch (EmployeeException ex) {
                     System.err.println("Error while reading: " + ex.toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         } catch (FileNotFoundException e) {
@@ -151,7 +163,7 @@ public class EmployeeRepository implements EmployeeRepositoryInterface {
         return employees;
     }
 
-    private String compareCNPs(String cnp1, String cnp2) {
+    public String compareCNPs(String cnp1, String cnp2) {
         String cnp1Year = cnp1.substring(1, 3);
         String cnp2Year = cnp2.substring(1, 3);
 
@@ -184,14 +196,16 @@ public class EmployeeRepository implements EmployeeRepositoryInterface {
 
 
     @Override
-    public List<Employee> orderByAge() {
+    public List<Employee> orderByAge() throws EmployeeException{
         List<Employee> employees = getEmployeeList();
+
+        if(employees.size() == 0) throw new EmployeeException("Can`t order an empty list!!");
 
         for (int i = 0; i < employees.size() - 1; i++) {
             for (int j = i + 1; j < employees.size(); j++) {
                 String cnp1 = employees.get(i).getCnp();
                 String cnp2 = employees.get(j).getCnp();
-                if (compareCNPs(cnp1, cnp2).equals(cnp2)) {
+                if (Objects.equals(compareCNPs(cnp1, cnp2), cnp2)) {
                     Employee aux = employees.get(i);
                     employees.set(i, employees.get(j));
                     employees.set(j, aux);

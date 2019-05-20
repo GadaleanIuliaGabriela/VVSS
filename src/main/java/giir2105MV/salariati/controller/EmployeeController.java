@@ -1,6 +1,7 @@
 package giir2105MV.salariati.controller;
 
 import giir2105MV.salariati.enumeration.DidacticFunction;
+import giir2105MV.salariati.exception.EmployeeException;
 import giir2105MV.salariati.model.Employee;
 import giir2105MV.salariati.repository.interfaces.EmployeeRepositoryInterface;
 
@@ -14,7 +15,7 @@ public class EmployeeController {
         this.employeeRepository = employeeRepository;
     }
 
-    public void addEmployee(Employee employee) {
+    public void addEmployee(Employee employee) throws EmployeeException {
         employeeRepository.addEmployee(employee);
     }
 
@@ -22,7 +23,7 @@ public class EmployeeController {
         return employeeRepository.getEmployeeList();
     }
 
-    public void modifyEmployee(String firstName, String lastName, DidacticFunction function) {
+    public void modifyEmployee(String firstName, String lastName, DidacticFunction function) throws Exception {
         employeeRepository.modifyEmployee(firstName, lastName, function);
     }
 
@@ -34,8 +35,16 @@ public class EmployeeController {
         return employeeRepository.orderBySalary();
     }
 
-    public List<Employee> orderByAge() {
+    public List<Employee> orderByAge() throws EmployeeException{
         return employeeRepository.orderByAge();
+    }
+
+    public void deleteAll() {
+        employeeRepository.deleteAllFromFile();
+    }
+
+    public String compareCNPs(Employee e1,Employee e2){
+        return employeeRepository.compareCNPs(e1.getCnp(),e2.getCnp());
     }
 
 }

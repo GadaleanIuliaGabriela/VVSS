@@ -7,6 +7,7 @@ package giir2105MV.salariati.main;
 
 import giir2105MV.salariati.controller.EmployeeController;
 import giir2105MV.salariati.enumeration.DidacticFunction;
+import giir2105MV.salariati.exception.EmployeeException;
 import giir2105MV.salariati.model.Employee;
 import giir2105MV.salariati.repository.implementations.EmployeeRepository;
 import giir2105MV.salariati.repository.interfaces.EmployeeRepositoryInterface;
@@ -30,21 +31,31 @@ public class StartApp {
         System.out.println("3. Order Employees by salary (descending) ");
         System.out.println("4. Order Employees by age (ascendinf) ");
         System.out.println("5. Show employees.");
-        System.out.println("6. Exit.");
+        System.out.println("6. Order Employees by age and salary");
+        System.out.println("7. Exit.");
         System.out.println("Enter command: ");
     }
 
-    private static void menu() {
+    private static void menu(){
         Scanner scanner = new Scanner(System.in);
         while (true) {
             printMenu();
             switch (scanner.nextInt()) {
                 case 1: {
-                    addEmployee();
+                    try {
+                        addEmployee();
+                    } catch (EmployeeException employeeExceptions) {
+                        employeeExceptions.printStackTrace();
+                    }
                     break;
                 }
                 case 2: {
-                    modifyEmployee();
+                    try {
+                        modifyEmployee();
+                    }
+                    catch(Exception e){
+                        e.getMessage();
+                    }
                     break;
                 }
                 case 3: {
@@ -52,7 +63,11 @@ public class StartApp {
                     break;
                 }
                 case 4: {
-                    orderByAge();
+                    try {
+                        orderByAge();
+                    } catch (EmployeeException employeeExceptions) {
+                        employeeExceptions.printStackTrace();
+                    }
                     break;
                 }
                 case 5: {
@@ -69,7 +84,7 @@ public class StartApp {
         }
     }
 
-    private static void addEmployee() {
+    private static void addEmployee() throws EmployeeException {
         Scanner scanner = new Scanner(System.in);
         System.out.println("First name: ");
         String firstName = scanner.next();
@@ -105,7 +120,7 @@ public class StartApp {
         return null;
     }
 
-    private static void modifyEmployee() {
+    private static void modifyEmployee() throws Exception{
         Scanner scanner = new Scanner(System.in);
         System.out.println("First Name: ");
         String firstName = scanner.next();
@@ -138,7 +153,7 @@ public class StartApp {
 
     }
 
-    private static void orderByAge() {
+    private static void orderByAge() throws EmployeeException{
         List<Employee> employees = employeeController.orderByAge();
         for (Employee e : employees) {
             System.out.println(e.toString());
